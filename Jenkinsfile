@@ -1,6 +1,8 @@
 pipeline {
     agent any
-    
+    environment {
+        MY_VARIABLE = 'varakumar/node-todo-test:latest'
+    }
     stages{
         stage('Code'){
             steps{
@@ -9,14 +11,14 @@ pipeline {
         }
         stage('Build and Test'){
             steps{
-                sh 'docker build . -t varakumar/node-todo-test:latest'
+                sh 'docker build -t ${MY_VARIABLE} .'
             }
         }
         stage('Push'){
             steps{
-                withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-        	     sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-                 sh 'docker push trainwithshubham/node-todo-test:latest'
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'pass', usernameVariable: 'user')]) {
+                    sh "docker login -u ${env.user} -p ${env.pass}"
+                    sh 'docker push ${MY_VARIABLE}'
                 }
             }
         }
